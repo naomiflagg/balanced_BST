@@ -60,10 +60,10 @@ class Tree
   end
 
   def min_value_node(node)
-    pointer = node
-    until pointer.left.nil?
-      pointer = pointer.left
+    while node.left
+      node = node.left
     end
+    node
   end
 
   def find(value)
