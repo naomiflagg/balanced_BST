@@ -1,6 +1,6 @@
 class Tree
   require_relative('node.rb')
-
+  
   attr_accessor :ary
 
   def initialize(ary)
@@ -39,10 +39,11 @@ class Tree
   def delete(value, root = @root)
     return root if root.nil?
 
-    root.left = delete(root.left, value) if value < root.value
-    root.right = delete(root.right, value) if value > root.value
-
-    if value == root.value
+    if value < root.value
+      root.left = delete(value, root.left)
+    elsif value > root.value
+      root.right = delete(value, root.right)
+    else
       # Node is leaf or has only one child
       if root.left.nil?
         temp = root.right
@@ -55,8 +56,9 @@ class Tree
       end
       temp = min_value_node(root.right)
       root.value = temp.value
-      root.right = delete(root.right, temp.value)
+      root.right = delete(temp.value, root.right)
     end
+    root
   end
 
   def min_value_node(node)
@@ -132,15 +134,22 @@ class Tree
   end
 
   def depth(node, root = @root, depth = 0)
+    return if root.nil?
+
     return depth if node == root.value
 
     depth += 1
-    depth(node, root.right, depth) if node > root.value
-    depth(node, root.left, depth) if node < root.value
+    if node > root.value
+      depth(node, root.right, depth) 
+    else
+      depth(node, root.left, depth)
+    end
   end
 
-  def balanced?
-    (height(@root.left) - height(@root.right)).abs <= 1
+  def balanced?(root = @root)
+    return true if root.nil?
+
+    ((height(root.left) - height(root.right)).abs <= 1) && balanced?(root.left) && balanced?(root.right)
   end
 
   def rebalance
